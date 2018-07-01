@@ -9,7 +9,7 @@ namespace CrossSolar.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                "OneHourElectricitys",
+                "OneHourElectricity",
                 table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -19,7 +19,7 @@ namespace CrossSolar.Migrations
                     KiloWatt = table.Column<long>(nullable: false),
                     PanelId = table.Column<string>(nullable: true)
                 },
-                constraints: table => { table.PrimaryKey("PK_OneHourElectricitys", x => x.Id); });
+                constraints: table => { table.PrimaryKey("PK_OneHourElectricity", x => x.Id); });
 
             migrationBuilder.CreateTable(
                 "Panels",
@@ -39,7 +39,7 @@ namespace CrossSolar.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                "OneHourElectricitys");
+                "OneHourElectricity");
 
             migrationBuilder.DropTable(
                 "Panels");

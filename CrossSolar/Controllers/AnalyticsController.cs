@@ -24,7 +24,7 @@ namespace CrossSolar.Controllers
         }
 
         // GET panel/XXXX1111YYYY2222/analytics
-        [HttpGet("{banelId}/[controller]")]
+        [HttpGet("{panelId}/[controller]")]
         public async Task<IActionResult> Get([FromRoute] string panelId)
         {
             var panel = await _panelRepository.Query()
@@ -37,7 +37,7 @@ namespace CrossSolar.Controllers
 
             var result = new OneHourElectricityListModel
             {
-                OneHourElectricitys = analytics.Select(c => new OneHourElectricityModel
+                OneHourElectricity = analytics.Select(c => new OneHourElectricityModel
                 {
                     Id = c.Id,
                     KiloWatt = c.KiloWatt,
@@ -52,7 +52,27 @@ namespace CrossSolar.Controllers
         [HttpGet("{panelId}/[controller]/day")]
         public async Task<IActionResult> DayResults([FromRoute] string panelId)
         {
+
+            var panel = await _panelRepository.Query()
+                .FirstOrDefaultAsync(x => x.Serial.Equals(panelId, StringComparison.CurrentCultureIgnoreCase));
+
+            if (panel == null) return NotFound();
+
+            var analytics = await _analyticsRepository.Query().Where(x => x.PanelId.Equals(panelId, StringComparison.CurrentCultureIgnoreCase)).GroupBy(panelData => panelData.DateTime.Date).ToDictionaryAsync(x => x.Key, item => item.ToList());
+
             var result = new List<OneDayElectricityModel>();
+
+            foreach (KeyValuePair<DateTime, List<OneHourElectricity>> panelDateData in analytics)
+            {
+                result.Add(new OneDayElectricityModel
+                {
+                    Average = panelDateData.Value.Average(item => item.KiloWatt),
+                    Maximum = panelDateData.Value.Max(item => item.KiloWatt),
+                    Minimum = panelDateData.Value.Min(item => item.KiloWatt),
+                    Sum = panelDateData.Value.Sum(item => item.KiloWatt),
+                    DateTime = panelDateData.Key
+                });
+            }
 
             return Ok(result);
         }

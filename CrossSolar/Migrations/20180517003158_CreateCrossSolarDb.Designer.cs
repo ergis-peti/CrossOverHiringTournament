@@ -34,7 +34,7 @@ namespace CrossSolar.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("OneHourElectricitys");
+                    b.ToTable("OneHourElectricity");
                 });
 
             modelBuilder.Entity("CrossSolar.Domain.Panel", b =>
